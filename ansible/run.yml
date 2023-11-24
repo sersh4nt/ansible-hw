@@ -1,0 +1,18 @@
+---
+- name: "run application"
+  hosts: localhost
+  gather_facts: False
+  vars:
+    - build_dest: /src/build
+
+  tasks:
+    - name: install node
+      apk:
+        name: nodejs,npm
+        update_cache: yes
+
+    - name: install serve
+      command: npm install -g serve
+
+    - name: serve application
+      command: "serve -l 3000 {{ build_dest }}"

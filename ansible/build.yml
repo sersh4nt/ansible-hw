@@ -1,0 +1,34 @@
+---
+- name: build application
+  hosts: localhost
+  gather_facts: False
+  vars:
+    - repo_dest: /src/app/sensorium-admin
+    - build_dest: /src/build
+    - version: dev
+  tasks:
+    - name: clone repository
+      git:
+        repo: https://github.com/sersh4nt/sensorium-admin.git
+        dest: "{{ repo_dest }}"
+        version: "{{ version }}"
+      ignore_errors: yes
+
+    - name: install node
+      apk:
+        name: nodejs,npm
+        update_cache: yes
+
+    - name: install dependencies
+      npm:
+        path: "{{ repo_dest }}"
+
+    - name: build
+      command: npm run build
+      args:
+        chdir: "{{ repo_dest }}"
+
+    - name: copy built artifact
+      copy:
+        src: "{{ repo_dest }}/dist/"
+        dest: "{{ build_dest }}"
